@@ -4,7 +4,7 @@ const bot = new Discord.Client();
 
 //Token ODMyMzMyOTg3Mjk0MTU0ODIz.YHiQgA.4_tyhFRQugHmqsHFebCVgcnlDew
 bot.login(process.env.token);
-const prefix = "z-";
+const prefix = "=";
 
 
 bot.on('message', (message) => {
@@ -20,5 +20,9 @@ bot.on('message', (message) => {
         message.channel.send("zMoon's Infos \n Telegram: @zMoon03 \n Discord: zMoon___#9072 \n GitHub: zMoon03 ");
 
     }
-
+    
+    if(message.content == (prefix + '5B')){
+        
+        message.channel.send("\n La classe è composta da 23 studenti di cui 21 sono maschi e 2 femmine.");
+    }
 })
