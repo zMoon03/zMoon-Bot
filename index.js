@@ -5,7 +5,7 @@ var request = require("request");
 
 const bot = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGES] });
 
-bot.login("OTUyNjE4MDYzMTAxMDY3MjY0.Yi4otQ.26tHAQwVHDRTizn2lQfjkKfzYH4");
+bot.login("OTUyNjE4MDYzMTAxMDY3MjY0.Yi4otQ.Q6XBHEvqTFRQx1AT7xFp3egyr-0");
 
 const prefix = '!';
 
