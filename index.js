@@ -94,7 +94,8 @@ bot.on('messageCreate', (message) => {
                                             ":white_check_mark: Il server è **online**! \n" +
                                             ":video_game: IP server: **" + body.hostname + "**\n" +
                                             ":globe_with_meridians: Il suo ping è: **" + pingMs + "**\n" +
-                                            ":bust_in_silhouette: Players online: **" + body.players.online + "/" + body.players.max + "**"
+                                            ":bust_in_silhouette: Players online: **" + body.players.online + "/" + body.players.max + "**\n" +
+                                            ":pencil2: MOTD: " + body.motd.clean
                                         )
                                         .setFooter({
                                             text: "Richiesto da " + message.author.tag,
