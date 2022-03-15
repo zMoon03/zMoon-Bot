@@ -30,8 +30,6 @@ bot.on('messageCreate', (message) => {
 
     if (message.content == (prefix + 'ip')) {
         message.channel.send("mc.calabriacity.it \n");
-
-
     }
 
     if (message.content.startsWith(prefix + "ping")) {
