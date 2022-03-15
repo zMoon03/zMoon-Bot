@@ -1,11 +1,14 @@
 const Discord = require("discord.js");
 const { Intents, MessageEmbed } = require("discord.js");
-var tcpp = require('tcp-ping');
-var request = require("request");
+const tcpp = require('tcp-ping');
+const status = require('minecraft-server-status-improved');
+//const status = require('minecraft-server-status');
+const request = require("request");
+const dnsLib = require("dns");
 
 const bot = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGES] });
 
-bot.login("OTUyNjE4MDYzMTAxMDY3MjY0.Yi4otQ.Q6XBHEvqTFRQx1AT7xFp3egyr-0");
+bot.login("OTUzMzQ5MzMzMzg5MDE3MTA4.YjDRwQ.a-4QqruoIbRyM3RIKK5FUBOKAEs");
 
 const prefix = '!';
 
@@ -16,7 +19,7 @@ bot.once('ready', () => {
     console.log('Bot is Online!');
 });
 
-bot.on('message', (message) => {
+bot.on('messageCreate', (message) => {
 
     if (message.content == (prefix + 'nome')) {
 
@@ -26,20 +29,34 @@ bot.on('message', (message) => {
 
     if (message.content == (prefix + 'ip')) {
         message.channel.send("mc.calabriacity.it \n");
+
+
     }
 
     if (message.content.startsWith(prefix + "ping")) {
         //Made with ❤️ by Voltix
-        var dns = message.content.split(" ")[1];
+        var userInput = message.content.split(" ")[1];
 
         message.channel.send(":arrows_counterclockwise: Sto controllando il server").then((sendMessage) => {
             var pingMs = "";
             try {
                 var url = "";
-                if (dns == undefined) {
-                    url = "https://api.mcsrvstat.us/2/mc.calabriacity.it";
+                if (userInput == undefined) {
+                    sendMessage.delete();
+                    const newEmbed = new MessageEmbed()
+                        .setColor('#FF0000')
+                        .setTitle('**Errore**')
+                        .setDescription(
+                            ":x: **Specifica l'ip del server!**"
+                        )
+                        .setFooter({
+                            text: "Richiesto da " + message.author.tag,
+                            iconURL: message.author.displayAvatarURL(),
+                        })
+                        .setTimestamp();
+                    message.channel.send({ embeds: [newEmbed] });
                 } else {
-                    url = "https://api.mcsrvstat.us/2/" + dns;
+                    url = "https://api.mcsrvstat.us/2/" + userInput;
                 }
 
                 request({
@@ -48,8 +65,26 @@ bot.on('message', (message) => {
                 }, function (error, response, body) {
 
                     if (!error && response.statusCode === 200) {
-                        if (body.ping != "false" && body.ip != "127.0.0.1") {
-                            tcpp.ping({ address: body.ip, port: 25565 }, function (err, data) {
+                        //console.log(body);
+
+                        if (body.debug.ping != false && body.online != false && body.ip != "127.0.0.1") {
+
+                            var portNumber = (!userInput.includes(":")) ? 25565 : userInput.split(":")[1];
+                            var dns = (!userInput.includes(":")) ? userInput : userInput.split(":")[0];
+
+                            var serverIp = "";
+                            if(body.ip != false) {
+                                serverIp = body.ip;
+                            } else {
+                                dnsLib.lookup(dns, (err, address, family) => {
+                                    if(err) throw err;
+                                    if(address != null) {
+                                        serverIp = address;
+                                    }
+                                });
+                            }
+
+                            tcpp.ping({ address: body.ip, port: portNumber }, function (err, data) {
                                 pingMs = parseInt(data.min) + " ms";
                                 if (data.max != undefined) {
                                     sendMessage.delete();
@@ -62,10 +97,10 @@ bot.on('message', (message) => {
                                             ":globe_with_meridians: Il suo ping è: **" + pingMs + "**\n" +
                                             ":bust_in_silhouette: Players online: **" + body.players.online + "/" + body.players.max + "**"
                                         )
-                                        .setFooter(
-                                            `Richiesto da ${message.author.tag}`,
-                                            message.author.displayAvatarURL(),
-                                        )
+                                        .setFooter({
+                                            text: "Richiesto da " + message.author.tag,
+                                            iconURL: message.author.displayAvatarURL(),
+                                        })
                                         .setTimestamp();
                                     message.channel.send({ embeds: [newEmbed] });
                                 }
@@ -80,16 +115,17 @@ bot.on('message', (message) => {
                                 .setDescription(
                                     ":x: Il server è **offline**!"
                                 )
-                                .setFooter(
-                                    `Richiesto da ${message.author.tag}`,
-                                    message.author.displayAvatarURL(),
-                                )
+                                .setFooter({
+                                    text: "Richiesto da " + message.author.tag,
+                                    iconURL: message.author.displayAvatarURL(),
+                                })
                                 .setTimestamp();
                             message.channel.send({ embeds: [newEmbed] });
 
                         }
 
                     }
+
                 })
             } catch (err) {
                 sendMessage.edit(":x: Il server è offline!");
