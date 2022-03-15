@@ -37,7 +37,19 @@ bot.on('message', (message) => {
             try {
                 var url = "";
                 if (dns == undefined) {
-                    url = "https://api.mcsrvstat.us/2/mc.calabriacity.it";
+                    sendMessage.delete();
+                    const newEmbed = new MessageEmbed()
+                                        .setColor('#FF0000')
+                                        .setTitle('**Errore**')
+                                        .setDescription(
+                                            ":x: **Specifica l'ip del server!**"
+                                        )
+                                        .setFooter(
+                                            `Richiesto da ${message.author.tag}`,
+                                            message.author.displayAvatarURL(),
+                                        )
+                                        .setTimestamp();
+                                    message.channel.send({ embeds: [newEmbed] });
                 } else {
                     url = "https://api.mcsrvstat.us/2/" + dns;
                 }
