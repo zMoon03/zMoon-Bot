@@ -1,3 +1,4 @@
+
 const Discord = require("discord.js");
 const { Intents, MessageEmbed } = require("discord.js");
 const tcpp = require('tcp-ping');
@@ -135,3 +136,4 @@ bot.on('messageCreate', (message) => {
 
     }
 });
+
