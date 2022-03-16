@@ -1,3 +1,25 @@
+connection.query(`SELECT userId FROM userData WHERE userID = ${message.author.id}`) //the row is the user's data
+            if (!message.author.id) { //if the user is not in the database
+                connection.query(`SELECT warn WHERE userid = ${message.author.id} `, function (err, result, fields) {
+                    if (err) throw err;
+                    console.log(result);
+                    warnNum = parseInt(result);
+                });
+            } else { 
+                var sql = `UPDATE userData SET warn = ${warnNum++} WHERE userId = ` + message.author + ``;
+                connection.query(sql, function (err, result) {
+                    if (err) throw err;
+                    console.log("Warn aggiornato", result);
+                });
+            }
+
+
+
+
+
+
+
+
 const Discord = require("discord.js");
 const { Intents, MessageEmbed } = require("discord.js");
 var tcpp = require('tcp-ping');

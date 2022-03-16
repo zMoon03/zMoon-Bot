@@ -2,38 +2,100 @@
 const Discord = require("discord.js");
 const { Intents, MessageEmbed } = require("discord.js");
 const tcpp = require('tcp-ping');
-const status = require('minecraft-server-status-improved');
-//const status = require('minecraft-server-status');
 const request = require("request");
 const dnsLib = require("dns");
+
+var paroleBandite = ['dio cane', 'puttana', 'fuck', 'merda', 'fanculo', 'server di merda', 'porca madonna', 'porco dio'];
 
 const bot = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGES] });
 
 bot.login("OTUzMzQ5MzMzMzg5MDE3MTA4.YjDRwQ.a-4QqruoIbRyM3RIKK5FUBOKAEs");
 
-const prefix = '!';
+bot.commands = new Discord.Collection();
 
 const fs = require('fs');
+
+
+const prefix = '!';
+
 const { version } = require("os");
+const { string } = require("assert-plus");
+const { __values } = require("tslib");
 
 bot.once('ready', () => {
     console.log('Bot is Online!');
 });
 
+const mysql = require('mysql');
+const connection = mysql.createConnection({
+    host: 'localhost',
+    port: '3306',
+    user: 'root',
+    password: '',
+    database: 'bot',
+    charset: 'utf8mb4_general_ci'
+});
+
+connection.connect(function (err) {
+    if (err) throw err;
+    console.log("Connected!");
+});
+
+
 bot.on('messageCreate', (message) => {
 
-    if (message.content == (prefix + 'nome')) {
+    if (new RegExp(paroleBandite.join("|")).test(message.content.toString().toLowerCase())) {
+        const newEmbed = new MessageEmbed()
+            .setColor('#FF0000')
+            .setTitle('**Warn**')
+            .setDescription(
+                ":x: **Hai usato una parola bandita**"
+            )
+            .setTimestamp();
+        message.author.send({ embeds: [newEmbed] });
+        warnNum = connection.query("SELECT warn FROM userData WHERE userID = "+ message.author);
+        var $user = connection.query("SELECT userID FROM userData WHERE userID = "+ message.author);
+        if ($user == message.author){
+            let warnNum = connection.query("SELECT warn FROM userData WHERE userID = "+ message.author);
+            connection.query(`UPDATE userData SET warn = ${warnNum++} `);
+            console.log("Warn aggiornato");
 
-        message.channel.send();
-
+        }else{
+            connection.query(`INSERT INTO userData (userID, warn) VALUES (`+ message.author + ` , ${warnNum++})`);
+            console.log("User creato");
+        }
+        message.delete();
     }
 
-    if (message.content == (prefix + 'ip')) {
-        message.channel.send("mc.calabriacity.it \n");
+    if (message.content.startsWith(prefix + 'clear')) {
+        var clear = message.content.split(" ")[1];
+        message.delete();
+        if (!message.content.includes(clear)) {
+            const newEmbed = new MessageEmbed()
+                .setColor('#FF0000')
+                .setTitle('**Clear**')
+                .setDescription(
+                    ":x: **Inserisci il numero di messaggi da cancellare**"
+                )
+                .setTimestamp();
+            message.channel.send({ embeds: [newEmbed] }).then((send) => { setTimeout(() => { send.delete() }, 2500); });
+        } else if (clear <= 0 || clear > 100) {
+            const newEmbed = new MessageEmbed()
+                .setColor('#FF0000')
+                .setTitle('**Clear**')
+                .setDescription(
+                    ":x: **Inserire un valore tra 1 e 100**"
+                )
+                .setTimestamp();
+            message.channel.send({ embeds: [newEmbed] }).then((send) => { setTimeout(() => { send.delete() }, 2500); });
+        } else {
+            message.channel.bulkDelete(clear, true).then((messages) => {
+                message.channel.send("Ho rimosso " + messages.size + " messaggi. :boom:").then((send) => { setTimeout(() => { send.delete() }, 2500); });
+            })
+        }
     }
 
     if (message.content.startsWith(prefix + "ping")) {
-        //Made with ❤️ by Voltix
         var userInput = message.content.split(" ")[1];
 
         message.channel.send(":arrows_counterclockwise: Sto controllando il server").then((sendMessage) => {
@@ -72,12 +134,12 @@ bot.on('messageCreate', (message) => {
                             var dns = (!userInput.includes(":")) ? userInput : userInput.split(":")[0];
 
                             var serverIp = "";
-                            if(body.ip != false) {
+                            if (body.ip != false) {
                                 serverIp = body.ip;
                             } else {
                                 dnsLib.lookup(dns, (err, address, family) => {
-                                    if(err) throw err;
-                                    if(address != null) {
+                                    if (err) throw err;
+                                    if (address != null) {
                                         serverIp = address;
                                     }
                                 });
@@ -135,4 +197,3 @@ bot.on('messageCreate', (message) => {
 
     }
 });
-
