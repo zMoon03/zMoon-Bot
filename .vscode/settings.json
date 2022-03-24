@@ -1,0 +1,12 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "warn",
+            "database": "${workspaceFolder:zMoon-s-Bot}/database.sqlite"
+        }
+    ],
+    "sqltools.useNodeRuntime": true,
+    "java.help.shareDiagnostics": true
+}

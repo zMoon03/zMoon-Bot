@@ -1,122 +1,14 @@
-
-const fs = require('fs');
-const { Client, Collection, Intents, Discord } = require("discord.js");
-const { MessageEmbed } = require("discord.js");
+module.exports = {
+    name: 'ping',
+    description: 'Restituisce delle informazioni sul server desiderato.'
+  }
+const prefix = '!';
 const tcpp = require('tcp-ping');
 const request = require("request");
 const dnsLib = require("dns");
-const wait = require('util').promisify(setTimeout);
-
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
-client.commands = new Collection();
-
-client.login("OTUzMzQ5MzMzMzg5MDE3MTA4.YjDRwQ.XwJLb1sI1NhAhQ_Rnu4kk_tW-o4");
-
-var paroleBandite = ['dio cane', 'puttana', 'fuck', 'merda', 'fanculo', 'server di merda', 'porca madonna', 'porco dio'];
-
-
-const prefix = '!';
-
-const { version } = require("os");
-const { string, arrayOfString } = require("assert-plus");
-const { __values } = require("tslib");
-
-
-client.once('ready', () => {
-    console.log('Bot is Online!');
-});
-
-const mysql = require('mysql');
-const connection = mysql.createConnection({
-    host: 'localhost',
-    port: '3306',
-    user: 'root',
-    password: '',
-    database: 'warnbot',
-    charset: 'utf8mb4_general_ci'
-});
-
-connection.connect(function (err) {
-    if (err) throw err;
-    console.log("Connected!");
-});
-
-const fileComandi = fs.readdirSync('./commands/').filter(file => file.endsWith('.js'));
-
-for (const file of fileComandi) {
-    const comando = require(`./commands/${file}`);
-    client.commands.set(comando.name, comando);
-}
-
-client.on('messageCreate',async (message) => {
-
-    const args = message.content.slice(prefix.length).split(/ +/);
-    const comando = args.shift().toLowerCase();
-
-    if(comando === 'clear'){
-        client.commands.get('clear').execute(message);
-    }
-    if(comando === 'ping'){
-        client.commands.get('ping').execute(message);
-    }
-
-
-    if (new RegExp(paroleBandite.join("|")).test(message.content.toString().toLowerCase())) {
-        const newEmbed = new MessageEmbed()
-            .setColor('#FF0000')
-            .setTitle('**Warn**')
-            .setDescription(
-                ":x: **Hai usato una parola bandita**"
-            )
-            .setTimestamp();
-        message.author.send({ embeds: [newEmbed] });
-        message.delete();
-
-        /*var id = message.author.id;
-        let warn = connection.query(`SELECT warn FROM userData WHERE userID = ${message.author.id}`);
-        let warnint = parseInt(warn);
-        let warninc = (warnint + 1);
-        var exist = connection.query(`UPDATE userData SET warn = warn +1 WHERE userID = ${id}`);
-        var check = connection.query(`SELECT userID FROM userdata WHERE EXISTS (SELECT userID FROM userdata WHERE userID = ${message.author.id});`);
-        var notexist = connection.query("INSERT INTO userData (userID,warn) VALUES (" + message.author.id + ", 1)");
-        if (check) {
-            exist;
-            console.log(exist)
-        } else {
-            notexist
-            console.log(notexist);
-        }*/
-
-    }
-
-    /*if (message.content.startsWith(prefix + 'clear')) {
-        var clear = message.content.split(" ")[1];
-        message.delete();
-        if (!message.content.includes(clear)) {
-            const newEmbed = new MessageEmbed()
-                .setColor('#FF0000')
-                .setTitle('**Clear**')
-                .setDescription(
-                    ":x: **Inserisci il numero di messaggi da cancellare**"
-                )
-                .setTimestamp();
-            message.channel.send({ embeds: [newEmbed] }).then((send) => { setTimeout(() => { send.delete() }, 2500); });
-        } else if (clear <= 0 || clear > 100) {
-            const newEmbed = new MessageEmbed()
-                .setColor('#FF0000')
-                .setTitle('**Clear**')
-                .setDescription(
-                    ":x: **Inserire un valore tra 1 e 100**"
-                )
-                .setTimestamp();
-            message.channel.send({ embeds: [newEmbed] }).then((send) => { setTimeout(() => { send.delete() }, 2500); });
-        } else {
-            message.channel.bulkDelete(clear, true).then((messages) => {
-                message.channel.send("Ho rimosso " + messages.size + " messaggi. :boom:").then((send) => { setTimeout(() => { send.delete() }, 2500); });
-            })
-        }
-    }
-
+const { Client, Collection, Intents, Discord } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
+module.exports.execute = async function (message) {
     if (message.content.startsWith(prefix + "ping")) {
         var userInput = message.content.split(" ")[1];
 
@@ -218,5 +110,5 @@ client.on('messageCreate',async (message) => {
 
         });
 
-    }*/
-});
+    }
+}
